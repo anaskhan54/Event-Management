@@ -30,7 +30,7 @@ class RegisterView(APIView):
              pass
         else:
             return Response({'message':'Invalid Recaptcha'},status=400)
-        if(settings.PRODUCTION):
+        if(settings.PRODUCTION=="TRUE"):
              
             if not re.match(r'^[a-zA-Z0-9_.+-]+@akgec\.ac\.in$', college_email):
                 return Response({"message":"Only College email is allowed"},status=400)

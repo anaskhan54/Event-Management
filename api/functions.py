@@ -8,6 +8,7 @@ import qrcode
 import base64
 from cryptography.fernet import Fernet
 from email.mime.image import MIMEImage
+from PIL import Image
 def verify_recaptcha(response):
     url = 'https://www.google.com/recaptcha/api/siteverify'
     values = {
@@ -39,7 +40,9 @@ def send_qr_code(email, student_id):
 
     # Save the QR code image to a file
     qr_img_path = os.path.join(settings.MEDIA_ROOT, f"qr_code_{student_id}.png")
-    qr_img.save(qr_img_path, format="PNG")
+    qr_img_pil = qr_img.convert('RGB')  # Convert PyPNGImage to PIL Image
+    qr_img_pil.save(qr_img_path, format='PNG')
+    # qr_img.save(qr_img_path, format="PNG")
 
     # Attach the QR code image to the email
     html_content = f"""
