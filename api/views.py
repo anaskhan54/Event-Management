@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .functions import verify_recaptcha,send_qr_code
@@ -29,19 +30,21 @@ class RegisterView(APIView):
              pass
         else:
             return Response({'message':'Invalid Recaptcha'},status=400)
+        if(settings.PRODUCTION):
+             
+            if not re.match(r'^[a-zA-Z0-9_.+-]+@akgec\.ac\.in$', college_email):
+                return Response({"message":"Only College email is allowed"},status=400)
+            if student_id not in college_email:
+                return Response({"message":"Only first year students are allowed"},status=400)
+            if not re.match(r'^[a-zA-Z\s]+$', first_name):
+                return Response({"message":"First name is invalid"},status=400)
+            if not re.match(r'^[a-zA-Z\s]+$', last_name):
+                return Response({"message":"Last name is invalid"},status=400)
+            if not re.match(r'^[0-9]{10}$', mobile_number):
+                return Response({"message":"Mobile number is invalid"},status=400)
+            if not re.match(r'^23[0-9]+$', student_id):             
+                return Response({"message":"Only first year students are allowed"},status=400)
         
-        if not re.match(r'^[a-zA-Z0-9_.+-]+@akgec\.ac\.in$', college_email):
-            return Response({"message":"Only College email is allowed"},status=400)
-        if student_id not in college_email:
-            return Response({"message":"Only first year students are allowed"},status=400)
-        if not re.match(r'^[a-zA-Z\s]+$', first_name):
-            return Response({"message":"First name is invalid"},status=400)
-        if not re.match(r'^[a-zA-Z\s]+$', last_name):
-            return Response({"message":"Last name is invalid"},status=400)
-        if not re.match(r'^[0-9]{10}$', mobile_number):
-            return Response({"message":"Mobile number is invalid"},status=400)
-        if not re.match(r'^23[0-9]+$', student_id):             
-            return Response({"message":"Only first year students are allowed"},status=400)
         if is_hosteler=="on":
                     is_hosteler=True                
         else:

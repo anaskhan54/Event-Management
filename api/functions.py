@@ -33,7 +33,6 @@ def send_qr_code(email, student_id):
     )
     # Assume `encrypt_data` is a placeholder for your encryption function
     encrypted_data = encrypt_data(student_id)
-
     qr.add_data(encrypted_data.decode())
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color="black", back_color="white")

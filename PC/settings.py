@@ -143,6 +143,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_HEADERS = ['*']
 
+PRODUCTION = os.getenv('PRODUCTION')
 AES_KEY=os.getenv('AES_KEY')
 RECAPTCHA_SECRET_KEY=os.getenv('RECAPTCHA_SECRET_KEY')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
