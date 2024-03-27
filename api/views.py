@@ -2,11 +2,13 @@ from django.shortcuts import render
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .functions import verify_recaptcha,send_qr_code
-from .models import Students
+from .functions import verify_recaptcha,send_qr_code,generate_tokens, is_refresh_valid, is_access_valid
+from .models import Students,Coordinators
 import re
-
-
+import hashlib
+import jwt
+from rest_framework import serializers
+from .serializers import StudentSerializer
 # Create your views here.
 
 class RegisterView(APIView):
@@ -68,6 +70,66 @@ class RegisterView(APIView):
                 hacker_rank_id=hacker_rank_id
             )
         student.save()
-        return Response({'message':'Registered Successfully'},status=201)
+        return Response({'message':'Registered Successfully, Check Your E-mail'},status=201)
       
         
+        
+class LoginView(APIView):
+     def post(slef,request):
+        print(request.data)
+        try:
+            username = request.data['username']
+            password = request.data['password']
+            
+        except:
+            return Response({"message":"Some fields are missing"},status=400)
+        try:
+            coordinator = Coordinators.objects.get(username=username)
+        except:
+            return Response({"message":"Invalid Credentials"},status=400)
+        if coordinator.password==hashlib.sha256(password.encode()).hexdigest():
+            access_token, refresh_token = generate_tokens(coordinator.id)
+            response_data={
+                'access_token':access_token,
+                'refresh_token':refresh_token,
+                'username':coordinator.username
+            }
+            return Response(response_data,status=200)
+        else:
+            return Response({"message":"Invalid Credentials"},status=400)
+        
+class GetAccessToken(APIView):
+    def get(self,request):
+        try:
+            refresh_token = request.data['refresh_token']
+        except:
+            return Response({"message":"No refresh token in body"},status=400)
+        if(is_refresh_valid(refresh_token)):
+            id=jwt.decode(refresh_token, settings.REFRESH_SECRET_KEY, algorithms=['HS256'])['id']
+            access_token, refresh_token = generate_tokens(id)
+            return Response({"access_token":access_token},status=200)
+        else:
+            return Response({"message":"Either the token is invalid or expired"},status=400)
+
+
+
+class GetStudentDetails(APIView):
+    def get(self,request,std_id):
+        try:
+            token=request.headers['Authorization']
+            if(is_access_valid(access_token=token)):
+                pass
+            else:
+                return Response({"message":"Either the token is expired or is invalid"},status=400)
+            
+        except:
+            return Response({"message":"Unauthorized"},status=401)
+        
+        try:
+            student=Students.objects.filter(student_id=std_id).first()
+
+            serializer = StudentSerializer(student)
+            
+            return Response(serializer.data,status=200)
+        except Exception as e:
+            return Response({"message":e},status=404)

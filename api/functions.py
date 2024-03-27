@@ -9,6 +9,11 @@ import base64
 from cryptography.fernet import Fernet
 from email.mime.image import MIMEImage
 from PIL import Image
+from datetime import datetime, timedelta
+import jwt
+
+access_secret=settings.ACCESS_SECRET_KEY
+refresh_secret=settings.REFRESH_SECRET_KEY
 def verify_recaptcha(response):
     url = 'https://www.google.com/recaptcha/api/siteverify'
     values = {
@@ -76,3 +81,43 @@ def encrypt_data(data):
     cipher=Fernet(key)
     encrypted_data=cipher.encrypt(str(data).encode())
     return encrypted_data
+
+def generate_tokens(id):
+    access_token_payload={
+        'id':id,
+        'exp':int((datetime.now()+timedelta(minutes=int(settings.ACCESS_TOKEN_EXPIRY))).timestamp())
+    }
+    refresh_token_payload={
+        'id':id,
+        'exp':int((datetime.now()+timedelta(days=int(settings.REFRESH_TOKEN_EXPIRY))).timestamp())
+    }
+    access_token=jwt.encode(access_token_payload, access_secret, algorithm='HS256')
+    refresh_token=jwt.encode(refresh_token_payload, refresh_secret, algorithm='HS256')
+    return access_token.encode().decode(), refresh_token.encode().decode()
+
+def is_refresh_valid(refresh_token):
+    try:
+        payload=jwt.decode(refresh_token, refresh_secret, algorithms=['HS256'])
+        
+        exp=payload['exp']
+        
+        current_time=int(datetime.now().timestamp())
+        if current_time>exp:
+            return False
+        else:  
+            return True
+    except:
+        return False
+def is_access_valid(access_token):
+    try:
+        payload=jwt.decode(access_token, access_secret, algorithms=['HS256'])
+        
+        exp=payload['exp']
+        
+        current_time=int(datetime.now().timestamp())
+        if current_time>exp:
+            return False
+        else:  
+            return True
+    except:
+        return False
