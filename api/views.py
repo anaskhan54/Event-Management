@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .functions import verify_recaptcha,send_qr_code,generate_tokens, is_refresh_valid, is_access_valid
+from .functions import verify_recaptcha,send_qr_code,generate_tokens, is_refresh_valid, is_access_valid,decrypt_data
 from .models import Students,Coordinators
 import re
 import hashlib
@@ -132,4 +132,35 @@ class GetStudentDetails(APIView):
             
             return Response(serializer.data,status=200)
         except Exception as e:
-            return Response({"message":e},status=404)
+            return Response({"message":"student not found"},status=404)
+
+class MakePayment(APIView):
+    def post(self,request):
+        try:
+            token=request.headers['Authorization']
+            if(is_access_valid(access_token=token)):
+                pass
+            else:
+                return Response({"message":"Either the token is expired or is invalid"},status=400)
+            
+        except:
+            return Response({"message":"Unauthorized"},status=401)
+        
+        try:
+            qr_data=request.data['qr_data']
+            try:
+                std_id=decrypt_data(qr_data)
+                student=Students.objects.get(student_id=std_id).first()
+                if(student.isPaid):
+                    return Response({"message":"Already Paid"},status=200)
+                else:
+                    student.isPaid=True
+                    student.save()
+                    serializer=StudentSerializer(student)
+                    return Response({"message":"Payment Successful",
+                                     "student_details":serializer.data},status=200)
+            except:
+                return Response({"message":"Invalid QR Code"},status=400)
+        except:
+            return Response({"message":"No qr_data in body"},status=400)
+        

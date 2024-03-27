@@ -82,6 +82,12 @@ def encrypt_data(data):
     encrypted_data=cipher.encrypt(str(data).encode())
     return encrypted_data
 
+def decrypt_data(encrypted_data):
+    key = settings.AES_KEY.encode()
+    cipher = Fernet(key)
+    decrypted_data = cipher.decrypt(encrypted_data)
+    return decrypted_data.decode()
+
 def generate_tokens(id):
     access_token_payload={
         'id':id,
@@ -121,3 +127,4 @@ def is_access_valid(access_token):
             return True
     except:
         return False
+    
