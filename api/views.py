@@ -21,7 +21,7 @@ class RegisterView(APIView):
     def post(self,request):
         
         try:
-            recaptcha_response= request.headers.get('Recaptcha-Token')
+            #recaptcha_response= request.headers.get('Recaptcha-Token')
             first_name = request.data['first_name']
             last_name = request.data['last_name']
             mobile_number = request.data['mobile_number']
@@ -34,6 +34,7 @@ class RegisterView(APIView):
             hacker_rank_id = request.data['hacker_rank_id']
         except:
              return Response({"message":"Some fields are missing"},status=400)
+        recaptcha_response="papa"
         if (verify_recaptcha(recaptcha_response)) or True:
              pass
         else:
