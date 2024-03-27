@@ -14,6 +14,18 @@ import jwt
 
 access_secret=settings.ACCESS_SECRET_KEY
 refresh_secret=settings.REFRESH_SECRET_KEY
+
+def time_left(target_date):
+    target_date = datetime.strptime(target_date, "%d/%m/%Y %H:%M")
+    current_date = datetime.now()
+    
+    time_difference = target_date - current_date
+    days = time_difference.days
+    hours, remainder = divmod(time_difference.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    
+    return days, hours, minutes, seconds
+
 def verify_recaptcha(response):
     url = 'https://www.google.com/recaptcha/api/siteverify'
     values = {

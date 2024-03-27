@@ -2,15 +2,21 @@ from django.shortcuts import render
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .functions import verify_recaptcha,send_qr_code,generate_tokens, is_refresh_valid, is_access_valid,decrypt_data
+from .functions import verify_recaptcha,send_qr_code,generate_tokens, is_refresh_valid, is_access_valid,decrypt_data,time_left
 from .models import Students,Coordinators
 import re
 import hashlib
 import jwt
 from rest_framework import serializers
 from .serializers import StudentSerializer
+
 # Create your views here.
 
+class TimeLeft(APIView):
+    def get(self,request):
+        target_date = "01/04/2024 00:00"
+        days, hours, minutes, seconds = time_left(target_date)
+        return Response({"days":days,"hours":hours,"minutes":minutes,"seconds":seconds},status=200)
 class RegisterView(APIView):
     def post(self,request):
         
