@@ -165,8 +165,9 @@ class MakePayment(APIView):
             qr_data=request.data['qr_data']
             try:
                 std_id=decrypt_data(qr_data)
+                return Response({"message":std_id},status=200)
                 student=Students.objects.filter(student_id=std_id).last()
-                return Response({"message":student.isPaid},status=200)
+                
                 isPaid=student.isPaid
                 isContestOnly=student.isContestOnly
                 day1_att=student.day1_att
