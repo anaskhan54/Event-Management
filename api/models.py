@@ -13,7 +13,8 @@ class Students(models.Model):
     isHosteler=models.BooleanField()
     hacker_rank_id=models.CharField(max_length=100)
     isPaid=models.BooleanField(default=False)
-    
+    isVerified=models.BooleanField(default=False)
+    token=models.CharField(max_length=100)
 
 class Coordinators(models.Model):
     username=models.CharField(max_length=100)

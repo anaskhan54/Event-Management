@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .functions import verify_recaptcha,send_qr_code,generate_tokens, is_refresh_valid, is_access_valid,decrypt_data,time_left
+from .functions import verify_recaptcha,send_qr_code,generate_tokens,send_verification_email, is_refresh_valid, is_access_valid,decrypt_data,time_left, generate_verification_token
 from .models import Students,Coordinators
 import re
 import hashlib
@@ -61,9 +61,8 @@ class RegisterView(APIView):
         
         #check if user already registered
             
-        send_qr_code(college_email,student_id)
-        
-            
+        #send_qr_code(college_email,student_id)
+        token=generate_verification_token()
         student = Students(
                 first_name=first_name,
                 last_name=last_name,
@@ -74,10 +73,13 @@ class RegisterView(APIView):
                 branch=branch,
                 section=section,
                 isHosteler=is_hosteler,
-                hacker_rank_id=hacker_rank_id
+                hacker_rank_id=hacker_rank_id,
+                token=token
             )
         student.save()
-        return Response({'message':'Registered Successfully, Check Your E-mail'},status=201)
+        send_verification_email(college_email)   
+        
+        return Response({'message':'Verification-Email Sent'},status=201)
       
         
         
@@ -171,3 +173,14 @@ class MakePayment(APIView):
         except:
             return Response({"message":"No qr_data in body"},status=400)
         
+class VerifyEmail(APIView):
+    def get(self,request):
+        try:
+            token=request.query_params['token']
+            student=Students.objects.get(token=token)
+            student.isVerified=True
+            student.save()
+            send_qr_code(student.college_email,student.student_id)
+            return Response({"message":"Email Verified, Check your Email for QR Code"},status=200)
+        except:
+            return Response({"message":"Invalid Token"},status=400)

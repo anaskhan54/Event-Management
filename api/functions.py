@@ -11,9 +11,18 @@ from email.mime.image import MIMEImage
 from PIL import Image
 from datetime import datetime, timedelta
 import jwt
+import secrets
+import string
 
 access_secret=settings.ACCESS_SECRET_KEY
 refresh_secret=settings.REFRESH_SECRET_KEY
+
+
+def generate_verification_token():
+    alphabet = string.ascii_letters + string.digits
+    token = ''.join(secrets.choice(alphabet) for i in range(20))
+    return token
+
 
 def time_left(target_date):
     target_date = datetime.strptime(target_date, "%d/%m/%Y %H:%M")
@@ -140,3 +149,20 @@ def is_access_valid(access_token):
     except:
         return False
     
+def send_verification_email(college_email,token):
+    html_content=f"""
+    <html>
+    <body>
+        <h2>Thank You for Registering, Please Verify Your Email</h2>
+        <a href="https://pc.anaskhan.site/api/verify_email?token={token}">Click here to verify your Email</a>
+    </body>
+    </html>
+    """
+    msg=EmailMessage(
+        'Verify Your Email',
+        html_content,
+        settings.EMAIL_HOST_USER,
+        [college_email],
+    )
+    msg.content_subtype="html"
+    msg.send()
