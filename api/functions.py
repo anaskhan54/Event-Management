@@ -106,9 +106,12 @@ def encrypt_data(data):
 def decrypt_data(encrypted_data):
     key = settings.AES_KEY.encode()
     cipher = Fernet(key)
-    decrypted_data = cipher.decrypt(encrypted_data)
+    try:
+        decrypted_data = cipher.decrypt(encrypted_data)
+    except:
+        return "unable to decrypt"
     return decrypted_data.decode()
-decrypt_data("gAAAAABmBeYZJOhFU5I58JeCgwsmkXzHywGHdF_QsLN1tEv7MZhVSADK-Tr1Ma-YQT-EgdCDzctLcPqGET5PAXvb8mQNUFLDAA==")
+    
 
 def generate_tokens(id):
     access_token_payload={
