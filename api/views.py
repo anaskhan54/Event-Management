@@ -135,7 +135,7 @@ class GetStudentDetails(APIView):
             return Response({"message":"Unauthorized"},status=401)
         
         try:
-            student=Students.objects.filter(student_id=std_id).first()
+            student=Students.objects.filter(student_id=std_id).last()
             if student is None:
                 return Response({"message":"student not found"},status=404)
             serializer = StudentSerializer(student)
@@ -161,7 +161,7 @@ class MakePayment(APIView):
             try:
                 std_id=decrypt_data(qr_data)
                 print(std_id)
-                student=Students.objects.get(student_id=std_id)
+                student=Students.objects.filter(student_id=std_id).last()
                 if(student.isPaid):
                     return Response({"message":"Already Paid"},status=200)
                 else:
@@ -180,7 +180,7 @@ class VerifyEmail(APIView):
         
         try:
             token=request.query_params['token']
-            student=Students.objects.get(token=token)
+            student=Students.objects.filter(token=token).last()
             if(student.isVerified):
                 return Response({"message":"Already Verified"},status=200)
             
@@ -197,6 +197,11 @@ class Subscribe(APIView):
             email=request.data['email']
         except:
             return Response({"message":"No email in body"},status=400)
+        if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+            return Response({"message":"Invalid Email"},status=400)
+        if(Subscribers.objects.filter(email=email).exists()):
+            return Response({"message":"Already Subscribed"},status=400)
+        
         subscriber=Subscribers(email=email)
         subscriber.save()
         return Response({"message":"Subscribed Successfully"},status=201)
