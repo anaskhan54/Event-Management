@@ -80,7 +80,7 @@ def send_qr_code(email, student_id):
     </html>
     """
     msg = EmailMessage(
-        'QR Code for Student ID',
+        'QR Code for Payment and Ticket',
         html_content,
         settings.EMAIL_HOST_USER,
         [email],

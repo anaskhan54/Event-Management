@@ -77,7 +77,7 @@ class RegisterView(APIView):
                 token=token
             )
         student.save()
-        send_verification_email(college_email)   
+        send_verification_email(college_email,token)   
         
         return Response({'message':'Verification-Email Sent'},status=201)
       
@@ -85,7 +85,7 @@ class RegisterView(APIView):
         
 class LoginView(APIView):
      def post(slef,request):
-        print(request.data)
+       
         try:
             username = request.data['username']
             password = request.data['password']
@@ -136,7 +136,8 @@ class GetStudentDetails(APIView):
         
         try:
             student=Students.objects.filter(student_id=std_id).first()
-
+            if student is None:
+                return Response({"message":"student not found"},status=404)
             serializer = StudentSerializer(student)
             
             return Response(serializer.data,status=200)
@@ -159,7 +160,8 @@ class MakePayment(APIView):
             qr_data=request.data['qr_data']
             try:
                 std_id=decrypt_data(qr_data)
-                student=Students.objects.get(student_id=std_id).first()
+                print(std_id)
+                student=Students.objects.get(student_id=std_id)
                 if(student.isPaid):
                     return Response({"message":"Already Paid"},status=200)
                 else:
@@ -175,12 +177,16 @@ class MakePayment(APIView):
         
 class VerifyEmail(APIView):
     def get(self,request):
+        
         try:
             token=request.query_params['token']
             student=Students.objects.get(token=token)
+            if(student.isVerified):
+                return Response({"message":"Already Verified"},status=200)
+            
             student.isVerified=True
             student.save()
             send_qr_code(student.college_email,student.student_id)
-            return Response({"message":"Email Verified, Check your Email for QR Code"},status=200)
+            return Response({"message":"Email Verified, Check your Email for QR Code and make payment at desk"},status=200)
         except:
             return Response({"message":"Invalid Token"},status=400)
