@@ -107,7 +107,11 @@ def decrypt_data(encrypted_data):
     key = settings.AES_KEY.encode()
     cipher = Fernet(key)
     decrypted_data = cipher.decrypt(encrypted_data)
-    return decrypted_data.decode()
+    # Convert bytes to base64-encoded string
+    decrypted_data_base64 = base64.b64encode(decrypted_data).decode()
+    # Replace newline characters with empty string
+    decrypted_data_base64_cleaned = decrypted_data_base64.replace('\n', '')
+    return decrypted_data_base64_cleaned
 
 def generate_tokens(id):
     access_token_payload={
