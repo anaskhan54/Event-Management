@@ -106,7 +106,7 @@ def encrypt_data(data):
 def decrypt_data(encrypted_data):
     key = settings.AES_KEY.encode()
     cipher = Fernet(key)
-    decrypted_data = cipher.decrypt(encrypted_data)
+    decrypted_data = cipher.decrypt(encrypted_data.encode())
     return decrypted_data.decode()
 
 def generate_tokens(id):
