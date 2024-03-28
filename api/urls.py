@@ -11,5 +11,5 @@ urlpatterns=[
     path('make_payment',views.MakePayment.as_view()),
     path('verify_email',views.VerifyEmail.as_view()),
     path('subscribe',views.Subscribe.as_view()),
-    path('mark_attendance',views.MarkAttendance.as_view()),
+    path('action',views.Action.as_view()),
 ]

@@ -79,7 +79,7 @@ class RegisterView(APIView):
                 hacker_rank_id=hacker_rank_id,
                 token=token,
                 isContestOnly=isContestOnly
-                
+
             )
         student.save()
         
@@ -182,8 +182,8 @@ class MakePayment(APIView):
                     "contest_attendance":contest_att
                 }
                 return Response(data,status=200)
-            except:
-                return Response({"message":"Invalid QR Code"},status=400)
+            except Exception as e:
+                return Response({"message":e},status=400)
         except:
             return Response({"message":"No qr_data in body"},status=400)
     def post(self,request):
@@ -252,7 +252,7 @@ class Subscribe(APIView):
         subscriber=Subscribers(email=email)
         subscriber.save()
         return Response({"message":"Subscribed Successfully"},status=201)
-class MarkAttendance(APIView):
+class Action(APIView):
     def post(self,request):
         try:
             token=request.headers['Authorization']
@@ -269,7 +269,7 @@ class MarkAttendance(APIView):
                 student=Students.objects.filter(student_id=std_id).last()
                 if(student.isPaid or student.isContestOnly):
                     try:
-                        att=request.data['attendance']
+                        att=request.data['action']
                         if att=="day1":
                             if student.day1_att:
                                 return Response({"message":"Already Marked"},status=200)
@@ -288,18 +288,22 @@ class MarkAttendance(APIView):
                             if student.contest_att:
                                 return Response({"message":"Already Marked"},status=200)
                             student.contest_att=True
-                        else:
-                            return Response({"message":"Invalid attendance"},status=400)
+                       
                         student.save()
 
                     except:
-                        return Response({"message":"No attendance in body"},status=400)
+                        return Response({"message":"No action in body"},status=400)
                     
                 else:
+                    if att=="pay":
+                        if student.isPaid:
+                            return Response({"message":"Already Paid"},status=200)
+                        student.isPaid=True
+                        student.save()
                     return Response({"message":"Payment not done"},status=400)
             except:
                 return Response({"message":"Invalid QR Code"},status=400)
         except:
             return Response({"message":"No qr_data in body"},status=400)
-        return Response({"message":"Attendance Marked"},status=200)
+        return Response({"message":"Action Performed Successfully"},status=200)
     
