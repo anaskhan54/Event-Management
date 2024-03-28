@@ -107,7 +107,7 @@ def decrypt_data(encrypted_data):
     key = settings.AES_KEY.encode()
     cipher = Fernet(key)
     try:
-        decrypted_data = cipher.decrypt(encrypted_data)
+        decrypted_data = cipher.decrypt(encrypted_data.encode())
     except:
         return "unable to decrypt"
     return decrypted_data.decode()
