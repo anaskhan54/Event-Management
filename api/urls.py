@@ -7,7 +7,9 @@ urlpatterns=[
     path('login',views.LoginView.as_view()),
     path('get_access_token',views.GetAccessToken.as_view()),
     path('student/<int:std_id>',views.GetStudentDetails.as_view()),
+    path('fetch_qr',views.MakePayment.as_view()),
     path('make_payment',views.MakePayment.as_view()),
     path('verify_email',views.VerifyEmail.as_view()),
-    path('subscribe',views.Subscribe.as_view())
+    path('subscribe',views.Subscribe.as_view()),
+    path('mark_attendance',views.MarkAttendance.as_view()),
 ]

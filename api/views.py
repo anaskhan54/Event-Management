@@ -32,6 +32,8 @@ class RegisterView(APIView):
             section = request.data['section']
             is_hosteler = request.data['is_hosteler']
             hacker_rank_id = request.data['hacker_rank_id']
+            isContestOnly = request.data['is_contest_only']
+            
         except:
              return Response({"message":"Some fields are missing"},status=400)
         recaptcha_response="papa"
@@ -51,13 +53,9 @@ class RegisterView(APIView):
                 return Response({"message":"Last name is invalid"},status=400)
             if not re.match(r'^[0-9]{10}$', mobile_number):
                 return Response({"message":"Mobile number is invalid"},status=400)
-            if not re.match(r'^23[0-9]+$', student_id):             
+            if not re.match(r'^[0-9a-zA-Z_-]+$', student_id):             
                 return Response({"message":"Only first year students are allowed"},status=400)
-        
-        if is_hosteler=="on":
-                    is_hosteler=True                
-        else:
-            is_hosteler=False 
+            
         
         #check if user already registered
             
@@ -79,7 +77,9 @@ class RegisterView(APIView):
                 section=section,
                 isHosteler=is_hosteler,
                 hacker_rank_id=hacker_rank_id,
-                token=token
+                token=token,
+                isContestOnly=isContestOnly
+                
             )
         student.save()
         
@@ -150,6 +150,42 @@ class GetStudentDetails(APIView):
             return Response({"message":"student not found"},status=404)
 
 class MakePayment(APIView):
+    def get(self,request):
+        try:
+            token=request.headers['Authorization']
+            if(is_access_valid(access_token=token)):
+                pass
+            else:
+                return Response({"message":"Either the token is expired or is invalid"},status=400)
+            
+        except:
+            return Response({"message":"Unauthorized"},status=401)
+        
+        try:
+            qr_data=request.data['qr_data']
+            try:
+                std_id=decrypt_data(qr_data)
+                student=Students.objects.filter(student_id=std_id).last()
+                isPaid=student.isPaid
+                isContestOnly=student.isContestOnly
+                day1_att=student.day1_att
+                day2_att=student.day2_att
+                contest_att=student.contest_att
+                name=student.first_name+" "+student.last_name
+                data={
+                    "student_id":std_id,
+                    "student_name":name,
+                    "isPaid":isPaid,
+                    "isContestOnly":isContestOnly,
+                    "day1_attendance":day1_att,
+                    "day2_attendance":day2_att,
+                    "contest_attendance":contest_att
+                }
+                return Response(data,status=200)
+            except:
+                return Response({"message":"Invalid QR Code"},status=400)
+        except:
+            return Response({"message":"No qr_data in body"},status=400)
     def post(self,request):
         try:
             token=request.headers['Authorization']
@@ -216,4 +252,54 @@ class Subscribe(APIView):
         subscriber=Subscribers(email=email)
         subscriber.save()
         return Response({"message":"Subscribed Successfully"},status=201)
+class MarkAttendance(APIView):
+    def post(self,request):
+        try:
+            token=request.headers['Authorization']
+            if(is_access_valid(access_token=token)):
+                pass
+            else:
+                return Response({"message":"Either the token is expired or is invalid"},status=400)
+        except:
+            return Response({"message":"Unauthorized"},status=401)
+        try:
+            qr_data=request.data['qr_data']
+            try:
+                std_id=decrypt_data(qr_data)
+                student=Students.objects.filter(student_id=std_id).last()
+                if(student.isPaid or student.isContestOnly):
+                    try:
+                        att=request.data['attendance']
+                        if att=="day1":
+                            if student.day1_att:
+                                return Response({"message":"Already Marked"},status=200)
+                            if student.isContestOnly:
+                                return Response({"message":"The student registered for Contest only"},status=400)
+                            
+                            student.day1_att=True
+                        elif att=="day2":
+                            if student.day2_att:
+                                return Response({"message":"Already Marked"},status=200)
+                            if student.isContestOnly:
+                                return Response({"message":"The student registered for Contest only"},status=400)
+                            
+                            student.day2_att=True
+                        elif att=="contest":
+                            if student.contest_att:
+                                return Response({"message":"Already Marked"},status=200)
+                            student.contest_att=True
+                        else:
+                            return Response({"message":"Invalid attendance"},status=400)
+                        student.save()
+
+                    except:
+                        return Response({"message":"No attendance in body"},status=400)
+                    
+                else:
+                    return Response({"message":"Payment not done"},status=400)
+            except:
+                return Response({"message":"Invalid QR Code"},status=400)
+        except:
+            return Response({"message":"No qr_data in body"},status=400)
+        return Response({"message":"Attendance Marked"},status=200)
     
