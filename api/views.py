@@ -265,46 +265,36 @@ class Action(APIView):
             return Response({"message":"Unauthorized"},status=401)
         try:
             qr_data=request.data['qr_data']
-            try:
-                std_id=decrypt_data(qr_data)
-                student=Students.objects.filter(student_id=std_id).last()
-                if(student.isPaid or student.isContestOnly):
-                    try:
-                        att=request.data['action']
-                        if att=="day1":
-                            if student.day1_att:
-                                return Response({"message":"Already Marked"},status=200)
-                            if student.isContestOnly:
-                                return Response({"message":"The student registered for Contest only"},status=400)
-                            
-                            student.day1_att=True
-                        elif att=="day2":
-                            if student.day2_att:
-                                return Response({"message":"Already Marked"},status=200)
-                            if student.isContestOnly:
-                                return Response({"message":"The student registered for Contest only"},status=400)
-                            
-                            student.day2_att=True
-                        elif att=="contest":
-                            if student.contest_att:
-                                return Response({"message":"Already Marked"},status=200)
-                            student.contest_att=True
-                       
-                        student.save()
-
-                    except:
-                        return Response({"message":"No action in body"},status=400)
-                    
-                else:
-                    if att=="pay":
-                        if student.isPaid:
-                            return Response({"message":"Already Paid"},status=200)
-                        student.isPaid=True
-                        student.save()
-                    return Response({"message":"Payment not done"},status=400)
-            except:
-                return Response({"message":"Invalid QR Code"},status=400)
+            day1_att=request.data['day1_att']
+            day2_att=request.data['day2_att']
+            contest_att=request.data['contest_att']
         except:
-            return Response({"message":"No qr_data in body"},status=400)
-        return Response({"message":"Action Performed Successfully"},status=200)
+            return Response({"message":"Some fields are missing"},status=400)
+        try:
+            std_id=decrypt_data(qr_data)
+            student=Students.objects.filter(student_id=std_id).last()
+            #all validations
+            if(student.day1_att and day1_att):
+                return Response({"message":"Already Marked Present for Day 1"},status=400)
+            if(student.day2_att and day2_att):
+                return Response({"message":"Already Marked Present for Day 2"},status=400)
+            if(student.contest_att and contest_att):
+                return Response({"message":"Already Marked Present for Contest"},status=400)
+            if(not student.isPaid):
+                return Response({"message":"Payment not done"},status=400)
+            if(student.isContestOnly and (day1_att or day2_att)):
+                return Response({"message":"Contest Only Pass"},status=400) 
+            else:
+
+                student.day1_att=day1_att
+                student.day2_att=day2_att
+                student.contest_att=contest_att
+                student.save()
+                serializer=StudentSerializer(student)
+                return Response({"message":"Action Completed Successfully",
+                                "student_details":serializer.data},status=200)
+        except:
+            return Response({"message":"Invalid QR Code"},status=400)
+        
+            
     
