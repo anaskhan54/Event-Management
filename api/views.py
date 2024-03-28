@@ -172,7 +172,8 @@ class MakePayment(APIView):
                 day2_att=student.day2_att
                 contest_att=student.contest_att
                 name=student.first_name+" "+student.last_name
-                data={
+                try:
+                    data={
                     "student_id":std_id,
                     "student_name":name,
                     "isPaid":isPaid,
@@ -181,7 +182,9 @@ class MakePayment(APIView):
                     "day2_attendance":day2_att,
                     "contest_attendance":contest_att
                 }
-            
+                except:
+                    return Response({"message":"unable to parse data"},status=400)
+
                 data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()} 
                 print(data)
                 return Response({"message":"see data"},status=200)
