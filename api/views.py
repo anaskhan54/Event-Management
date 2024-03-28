@@ -181,16 +181,16 @@ class MakePayment(APIView):
                     "day2_attendance":day2_att,
                     "contest_attendance":contest_att
                 }
+            
+                data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()} 
                 print(data)
-                data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()}   
-                return Response(data,status=200)
+                return Response({"message":"see data"},status=200)
             except Exception as e:
-                print(data)
+               
 
                 return Response({"message":"Invalid qr code"},status=400)
         except:
-            print(data)
-            print(qr_data)
+            
             return Response({"message":"No qr_data in body"},status=400)
     def post(self,request):
         try:
