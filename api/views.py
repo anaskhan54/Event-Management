@@ -186,9 +186,11 @@ class MakePayment(APIView):
                 return Response(data,status=200)
             except Exception as e:
                 print(data)
-                
+
                 return Response({"message":"Invalid qr code"},status=400)
         except:
+            print(data)
+            print(qr_data)
             return Response({"message":"No qr_data in body"},status=400)
     def post(self,request):
         try:
