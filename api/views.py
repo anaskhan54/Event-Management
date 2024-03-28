@@ -9,7 +9,7 @@ import hashlib
 import jwt
 from rest_framework import serializers
 from .serializers import StudentSerializer
-
+import threading
 # Create your views here.
 
 class TimeLeft(APIView):
@@ -63,6 +63,11 @@ class RegisterView(APIView):
             
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
+        email_thread=threading.Thread(
+            target=send_verification_email,
+            args=(college_email,token)
+        )
+        email_thread.start()
         student = Students(
                 first_name=first_name,
                 last_name=last_name,
@@ -77,7 +82,7 @@ class RegisterView(APIView):
                 token=token
             )
         student.save()
-        send_verification_email(college_email,token)   
+        
         
         return Response({'message':'Verification-Email Sent'},status=201)
       
@@ -181,12 +186,18 @@ class VerifyEmail(APIView):
         try:
             token=request.query_params['token']
             student=Students.objects.filter(token=token).last()
+            print(student)
             if(student.isVerified):
                 return Response({"message":"Already Verified"},status=200)
             
             student.isVerified=True
             student.save()
-            send_qr_code(student.college_email,student.student_id)
+            email_thread=threading.Thread(
+                target=send_qr_code,
+                args=(student.college_email,student.student_id)
+            )
+            email_thread.start()
+           
             return Response({"message":"Email Verified, Check your Email for QR Code and make payment at desk"},status=200)
         except:
             return Response({"message":"Invalid Token"},status=400)
