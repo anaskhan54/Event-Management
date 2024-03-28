@@ -187,8 +187,8 @@ class MakePayment(APIView):
                 return Response({"message":"see data"},status=200)
             except Exception as e:
                
-                print(data)
-                return Response({"message":"Invalid qr code"},status=400)
+                
+                return Response({"error":e},status=400)
         except:
             
             return Response({"message":"No qr_data in body"},status=400)
