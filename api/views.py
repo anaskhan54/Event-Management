@@ -287,8 +287,10 @@ class FetchQR(APIView):
             try:
                 qr_data=request.data['qr_data']
                 try:
-                    std_id=decrypt_data(qr_data)
-                    return Response({"message":std_id},status=200)
+                    try:
+                        std_id=decrypt_data(qr_data)
+                    except:
+                        return Response({"message":"unable to decrypt"},status=200)
                     student=Students.objects.filter(student_id=std_id).last()
                     
                     isPaid=student.isPaid
