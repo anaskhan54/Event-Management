@@ -185,7 +185,7 @@ class MakePayment(APIView):
                 except:
                     return Response({"message":"unable to parse data"},status=400)
 
-                data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()} 
+                # data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()} 
                 print(data)
                 return Response({"message":"see data"},status=200)
             except Exception as e:
