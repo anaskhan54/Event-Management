@@ -150,53 +150,7 @@ class GetStudentDetails(APIView):
             return Response({"message":"student not found"},status=404)
 
 class MakePayment(APIView):
-    def get(self,request):
-        try:
-            token=request.headers['Authorization']
-            if(is_access_valid(access_token=token)):
-                pass
-            else:
-                return Response({"message":"Either the token is expired or is invalid"},status=400)
-            
-        except:
-            return Response({"message":"Unauthorized"},status=401)
-        
-        try:
-            qr_data=request.data['qr_data']
-            try:
-                std_id=decrypt_data(qr_data)
-                return Response({"message":std_id},status=200)
-                student=Students.objects.filter(student_id=std_id).last()
-                
-                isPaid=student.isPaid
-                isContestOnly=student.isContestOnly
-                day1_att=student.day1_att
-                day2_att=student.day2_att
-                contest_att=student.contest_att
-                name=student.first_name+" "+student.last_name
-                try:
-                    data={
-                    "student_id":std_id,
-                    "student_name":name,
-                    "isPaid":isPaid,
-                    "isContestOnly":isContestOnly,
-                    "day1_attendance":day1_att,
-                    "day2_attendance":day2_att,
-                    "contest_attendance":contest_att
-                }
-                except:
-                    return Response({"message":"unable to parse data"},status=400)
 
-                # data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()} 
-                print(data)
-                return Response({"message":"see data"},status=200)
-            except Exception as e:
-               
-                
-                return Response({"error":e},status=400)
-        except:
-            
-            return Response({"message":"No qr_data in body"},status=400)
     def post(self,request):
         try:
             token=request.headers['Authorization']
@@ -318,3 +272,51 @@ class Action(APIView):
             return Response({"message":"No qr_data in body"},status=400)
         return Response({"message":"Action Performed Successfully"},status=200)
     
+class FetchQR(APIView):
+        def get(self,request):
+            try:
+                token=request.headers['Authorization']
+                if(is_access_valid(access_token=token)):
+                    pass
+                else:
+                    return Response({"message":"Either the token is expired or is invalid"},status=400)
+                
+            except:
+                return Response({"message":"Unauthorized"},status=401)
+            
+            try:
+                qr_data=request.data['qr_data']
+                try:
+                    std_id=decrypt_data(qr_data)
+                    return Response({"message":std_id},status=200)
+                    student=Students.objects.filter(student_id=std_id).last()
+                    
+                    isPaid=student.isPaid
+                    isContestOnly=student.isContestOnly
+                    day1_att=student.day1_att
+                    day2_att=student.day2_att
+                    contest_att=student.contest_att
+                    name=student.first_name+" "+student.last_name
+                    try:
+                        data={
+                        "student_id":std_id,
+                        "student_name":name,
+                        "isPaid":isPaid,
+                        "isContestOnly":isContestOnly,
+                        "day1_attendance":day1_att,
+                        "day2_attendance":day2_att,
+                        "contest_attendance":contest_att
+                    }
+                    except:
+                        return Response({"message":"unable to parse data"},status=400)
+
+                    # data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()} 
+                    print(data)
+                    return Response({"message":"see data"},status=200)
+                except Exception as e:
+                
+                    
+                    return Response({"error":e},status=400)
+            except:
+                
+                return Response({"message":"No qr_data in body"},status=400)
