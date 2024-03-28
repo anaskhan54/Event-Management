@@ -9,4 +9,5 @@ urlpatterns=[
     path('student/<int:std_id>',views.GetStudentDetails.as_view()),
     path('make_payment',views.MakePayment.as_view()),
     path('verify_email',views.VerifyEmail.as_view()),
+    path('subscribe',views.Subscribe.as_view())
 ]

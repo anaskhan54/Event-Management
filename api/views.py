@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .functions import verify_recaptcha,send_qr_code,generate_tokens,send_verification_email, is_refresh_valid, is_access_valid,decrypt_data,time_left, generate_verification_token
-from .models import Students,Coordinators
+from .models import Students,Coordinators,Subscribers
 import re
 import hashlib
 import jwt
@@ -190,3 +190,14 @@ class VerifyEmail(APIView):
             return Response({"message":"Email Verified, Check your Email for QR Code and make payment at desk"},status=200)
         except:
             return Response({"message":"Invalid Token"},status=400)
+        
+class Subscribe(APIView):
+    def post(self,request):
+        try:
+            email=request.data['email']
+        except:
+            return Response({"message":"No email in body"},status=400)
+        subscriber=Subscribers(email=email)
+        subscriber.save()
+        return Response({"message":"Subscribed Successfully"},status=201)
+    

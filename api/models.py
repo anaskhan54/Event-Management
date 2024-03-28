@@ -19,3 +19,7 @@ class Students(models.Model):
 class Coordinators(models.Model):
     username=models.CharField(max_length=100)
     password=models.CharField(max_length=100)
+
+class Subscribers(models.Model):
+    email=models.EmailField(max_length=100)
+    date=models.DateTimeField(auto_now_add=True)
