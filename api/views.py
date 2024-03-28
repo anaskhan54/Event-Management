@@ -181,6 +181,8 @@ class MakePayment(APIView):
                     "day2_attendance":day2_att,
                     "contest_attendance":contest_att
                 }
+                print(data)
+                data = {key: value if isinstance(value, (int, str, bool, float)) else str(value) for key, value in data.items()}   
                 return Response(data,status=200)
             except Exception as e:
                 return Response({"message":e},status=400)
