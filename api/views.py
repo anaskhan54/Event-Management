@@ -255,14 +255,14 @@ class Subscribe(APIView):
         return Response({"message":"Subscribed Successfully"},status=201)
 class Action(APIView):
     def post(self,request):
-        # try:
-        #     token=request.headers['Authorization']
-        #     if(is_access_valid(access_token=token)):
-        #         pass
-        #     else:
-        #         return Response({"message":"Either the token is expired or is invalid"},status=400)
-        # except:
-        #     return Response({"message":"Unauthorized"},status=401)
+        try:
+            token=request.headers['Authorization']
+            if(is_access_valid(access_token=token)):
+                pass
+            else:
+                return Response({"message":"Either the token is expired or is invalid"},status=400)
+        except:
+            return Response({"message":"Unauthorized"},status=401)
         try:
             qr_data=request.data['qr_data']
             action=request.data['action']
