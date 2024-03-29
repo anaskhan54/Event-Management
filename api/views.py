@@ -255,44 +255,73 @@ class Subscribe(APIView):
         return Response({"message":"Subscribed Successfully"},status=201)
 class Action(APIView):
     def post(self,request):
-        try:
-            token=request.headers['Authorization']
-            if(is_access_valid(access_token=token)):
-                pass
-            else:
-                return Response({"message":"Either the token is expired or is invalid"},status=400)
-        except:
-            return Response({"message":"Unauthorized"},status=401)
+        # try:
+        #     token=request.headers['Authorization']
+        #     if(is_access_valid(access_token=token)):
+        #         pass
+        #     else:
+        #         return Response({"message":"Either the token is expired or is invalid"},status=400)
+        # except:
+        #     return Response({"message":"Unauthorized"},status=401)
         try:
             qr_data=request.data['qr_data']
-            day1_att=request.data['day1_att']
-            day2_att=request.data['day2_att']
-            contest_att=request.data['contest_att']
+            action=request.data['action']
         except:
             return Response({"message":"Some fields are missing"},status=400)
         try:
             std_id=decrypt_data(qr_data)
             student=Students.objects.filter(student_id=std_id).last()
-            #all validations
-            if(student.day1_att and day1_att):
-                return Response({"message":"Already Marked Present for Day 1"},status=400)
-            if(student.day2_att and day2_att):
-                return Response({"message":"Already Marked Present for Day 2"},status=400)
-            if(student.contest_att and contest_att):
-                return Response({"message":"Already Marked Present for Contest"},status=400)
-            if(not student.isPaid and not student.isContestOnly):
-                return Response({"message":"Payment not done"},status=400)
-            if(student.isContestOnly and (day1_att or day2_att)):
-                return Response({"message":"Contest Only Pass"},status=400) 
+            print(student.token)
+            if action=="pay":
+                if(student.isPaid):
+                    print(student.isPaid)
+                    return Response({"message":"Already Paid"},status=200)
+                else:
+                    student.isPaid=True
+                    student.save()
+                    serializer=StudentSerializer(student)
+                    return Response({"message":"Payment Successful",
+                                     "student_details":serializer.data},status=200)
+            elif action=="mark_day1":
+                if(student.isPaid==False):
+                    return Response({"message":"Payment Pending"},status=200)
+                if(student.day1_att):
+                    return Response({"message":"Already Marked"},status=200)
+                else:
+                    student.day1_att=True
+                    student.save()
+                    serializer=StudentSerializer(student)
+                    return Response({"message":"Marked Successfully",
+                                     "student_details":serializer.data},status=200)
+            elif action=="mark_day2":
+                if(student.isPaid==False):
+                    return Response({"message":"Payment Pending"},status=200)
+                if(student.day2_att):
+                    return Response({"message":"Already Marked"},status=200)
+                else:
+                    student.day2_att=True
+                    student.save()
+                    serializer=StudentSerializer(student)
+                    return Response({"message":"Marked Successfully",
+                                     "student_details":serializer.data},status=200)
+            elif action=="mark_contest":
+                if(student.contest_att):
+                    return Response({"message":"Already Marked"},status=200)
+                else:
+                    student.contest_att=True
+                    student.save()
+                    serializer=StudentSerializer(student)
+                    return Response({"message":"Marked Successfully",
+                                     "student_details":serializer.data},status=200)
             else:
+                return Response({"message":"Invalid Action"},status=400)
+            
+            
 
-                student.day1_att=day1_att
-                student.day2_att=day2_att
-                student.contest_att=contest_att
-                student.save()
-                serializer=StudentSerializer(student)
-                return Response({"message":"Action Completed Successfully",
-                                "student_details":serializer.data},status=200)
+
+
+
+            
         except:
             return Response({"message":"Invalid QR Code"},status=400)
         
