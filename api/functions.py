@@ -120,9 +120,10 @@ def send_qr_code(email, student_id,student_name):
             <p>We are excited to have you join our event. Here is your registration confirmation:</p>
             <img src="cid:qr_code_{student_id}.png" alt="QR Code" class="qr-code">
             <p>Now, to complete your registration, please go to the registration desk and proceed with the payment. Show this QR code at the desk, and the same QR code will serve as your ticket after the payment.</p>
+            <p>Since, this is your entry ticket, please do not share this QR code with anyone else.</p>
             <p>For any queries, please contact our coordinator:</p>
-            <p>Name: Coordinator Name</p>
-            <p>Mobile Number: Coordinator Mobile Number</p>
+            <p>coordinator.name</p>
+            <p>1234567890</p>
             <p>Best regards,</p>
             <p>Your Programming Club</p>
             <hr>

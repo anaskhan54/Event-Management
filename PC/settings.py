@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-snlgz_f=uc*-4tpf7td#i&3n(pj3&o$bx*9vmsqtg8ib!bodq3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -160,3 +160,5 @@ REFRESH_TOKEN_EXPIRY = os.getenv('REFRESH_TOKEN_EXPIRY')
 
 ACCESS_SECRET_KEY = os.getenv('ACCESS_SECRET_KEY')
 REFRESH_SECRET_KEY = os.getenv('REFRESH_SECRET_KEY')
+
+MY_SECRET_KEY = os.getenv('MY_SECRET_KEY')

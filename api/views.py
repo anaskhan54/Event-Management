@@ -326,7 +326,72 @@ class Action(APIView):
         except:
             return Response({"message":"Invalid QR Code"},status=400)
         
-            
+
+from django.http import FileResponse
+from openpyxl import workbook
+from openpyxl.utils import get_column_letter
+import os       
 class GetExcel(APIView):
-    def get(self,request,data,secret):
-        return Response({"message":"Hello"},status=200)
+    def get(self,request,secret):
+   
+        if secret!=settings.MY_SECRET_KEY:
+            return Response({"message":"Invalid Secret Key"},status=400)
+        
+        if 'workshop' in request.path:
+            
+            #get students who are not onlycontestants
+            students=Students.objects.filter(isContestOnly=False).order_by('student_id').values('student_id','first_name','mobile_number','isPaid','day1_att','day2_att',)
+
+            wb=workbook.Workbook()
+            ws=wb.active
+            column_names=['Student ID','Name','Mobile','isPaid','Day1_Att','Day2_Att']
+            ws.append(['WORKSHOP_ATTENDANCE_SHEET'])  # Add header row
+            ws.append([])  # Add empty row before data starts
+            ws.append(column_names)  # Add column names row
+            for student in students:
+                row=[]
+                for key in student:
+                    if key.startswith('day') or key == 'contest_att':
+                        row.append('P' if student[key] else '')
+                    elif key == 'isPaid':
+                        row.append('Paid' if student[key] else '')
+
+                    else:
+                        row.append(student[key])
+                ws.append(row)
+            
+            wb.save('students.xlsx')
+            return FileResponse(open('students.xlsx','rb'),as_attachment=True,filename='workshop+contest-attendance_sheet.xlsx')
+        elif 'contest' in request.path:
+            #get all students 
+            students=Students.objects.all().order_by('student_id').values('student_id','first_name','mobile_number','contest_att')
+            wb=workbook.Workbook()
+            ws=wb.active
+            column_names=['Student ID','Name','Mobile:','Contest_Att']
+            ws.append(['CONTEST_ATTENDANCE_SHEET'])
+            ws.append([])
+            ws.append(column_names)
+            for student in students:
+                row=[]
+                for key in student:
+                    if key == 'contest_att':
+                        row.append('P' if student[key] else '')
+                    else:
+                        row.append(student[key])
+                ws.append(row)
+            
+            wb.save('students.xlsx')
+            return FileResponse(open('students.xlsx','rb'),as_attachment=True,filename='contest_attendance_sheet.xlsx')
+            
+        else:
+            return Response({"message":"Invalid URL"},status=400)
+        
+
+       
+        
+        
+        
+
+
+   
+        
