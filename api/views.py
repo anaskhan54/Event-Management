@@ -280,7 +280,7 @@ class Action(APIView):
                 return Response({"message":"Already Marked Present for Day 2"},status=400)
             if(student.contest_att and contest_att):
                 return Response({"message":"Already Marked Present for Contest"},status=400)
-            if(not student.isPaid):
+            if(not student.isPaid and not student.isContestOnly):
                 return Response({"message":"Payment not done"},status=400)
             if(student.isContestOnly and (day1_att or day2_att)):
                 return Response({"message":"Contest Only Pass"},status=400) 
