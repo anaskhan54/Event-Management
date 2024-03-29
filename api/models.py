@@ -11,6 +11,7 @@ class Students(models.Model):
     branch=models.CharField(max_length=100)
     section=models.CharField(max_length=100)
     isHosteler=models.BooleanField(default=False)
+    university_roll_number=models.IntegerField()
     hacker_rank_id=models.CharField(max_length=100)
     isPaid=models.BooleanField(default=False)
     isVerified=models.BooleanField(default=False)

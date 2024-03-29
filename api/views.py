@@ -33,6 +33,7 @@ class RegisterView(APIView):
             is_hosteler = request.data['is_hosteler']
             hacker_rank_id = request.data['hacker_rank_id']
             isContestOnly = request.data['is_contest_only']
+            university_roll_number=request.data['university_roll_number']
             
         except:
              return Response({"message":"Some fields are missing"},status=400)
@@ -78,8 +79,8 @@ class RegisterView(APIView):
                 isHosteler=is_hosteler,
                 hacker_rank_id=hacker_rank_id,
                 token=token,
-                isContestOnly=isContestOnly
-
+                isContestOnly=isContestOnly,
+                university_roll_number=university_roll_number
             )
         student.save()
         
