@@ -232,7 +232,7 @@ class VerifyEmail(APIView):
             student.save()
             email_thread=threading.Thread(
                 target=send_qr_code,
-                args=(student.college_email,student.student_id)
+                args=(student.college_email,student.student_id,student.first_name)
             )
             email_thread.start()
            

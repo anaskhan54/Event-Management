@@ -51,7 +51,7 @@ def verify_recaptcha(response):
         return False
 
 
-def send_qr_code(email, student_id):
+def send_qr_code(email, student_id,student_name):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -66,6 +66,11 @@ def send_qr_code(email, student_id):
 
     # Save the QR code image to a file
     qr_img_path = os.path.join(settings.MEDIA_ROOT, f"qr_code_{student_id}.png")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    insta_img_path = os.path.join(current_dir, "insta.png")
+    linkedin_img_path = os.path.join(current_dir, "linkedin.png")
+    logo_img_path = os.path.join(current_dir, "logo.png")
     qr_img_pil = qr_img.convert('RGB')  # Convert PyPNGImage to PIL Image
     qr_img_pil.save(qr_img_path, format='PNG')
     # qr_img.save(qr_img_path, format="PNG")
@@ -73,9 +78,59 @@ def send_qr_code(email, student_id):
     # Attach the QR code image to the email
     html_content = f"""
     <html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <style>
+            body {{
+                font-family: 'Roboto', sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }}
+            .logo {{
+                max-width: 150px;
+            }}
+            .qr-code {{
+                max-width: 200px;
+                margin: 20px auto;
+                display: block;
+            }}
+            .social-logos {{
+                text-align: center;
+            }}
+            .social-logo {{
+                max-width: 30px;
+                margin: 0 5px;
+            }}
+        </style>
+    </head>
     <body>
-        <h2>Thank You for Registering, Here is Your QR</h2>
-        <img src="cid:qr_code_{student_id}.png" alt="QR Code">
+        <div class="container">
+            <img src="cid:logo.png" alt="Programming Club Logo" class="logo">
+            <h2>Thank You for Registering!</h2>
+            <p>Dear {student_name},</p>
+            <p>We are excited to have you join our event. Here is your registration confirmation:</p>
+            <img src="cid:qr_code_{student_id}.png" alt="QR Code" class="qr-code">
+            <p>Now, to complete your registration, please go to the registration desk and pay Rs.150. Show this QR code at the desk, and the same QR code will serve as your ticket after the payment.</p>
+            <p>For any queries, please contact our coordinator:</p>
+            <p>Name: Coordinator Name</p>
+            <p>Mobile Number: Coordinator Mobile Number</p>
+            <p>Best regards,</p>
+            <p>Your Programming Club</p>
+            <hr>
+            <div class="social-logos">
+                <a href="https://www.instagram.com/" target="_blank"><img src="cid:insta.png" alt="Instagram Logo" class="social-logo" style="height: 30px; width: 30px;"></a>
+                <a href="https://www.linkedin.com/" target="_blank"><img src="cid:linkedin.png" alt="LinkedIn Logo" class="social-logo" style="height: 30px; width: 30px;"></a>
+            </div>
+        </div>
     </body>
     </html>
     """
@@ -87,10 +142,33 @@ def send_qr_code(email, student_id):
     )
     msg.content_subtype = "html"
 
-    with open(qr_img_path, "rb") as f:
-        msg_img = MIMEImage(f.read())
-        msg_img.add_header("Content-ID", f"<qr_code_{student_id}.png>")
+    # Attach the logo
+    with open(logo_img_path, 'rb') as f:
+        logo_data = f.read()
+        msg_img = MIMEImage(logo_data)
+        msg_img.add_header('Content-ID', '<logo.png>')
         msg.attach(msg_img)
+
+    # Attach the QR code
+    with open(qr_img_path, 'rb') as f:
+        qr_code_data = f.read()
+        msg_qr_code = MIMEImage(qr_code_data)
+        msg_qr_code.add_header('Content-ID', f'<qr_code_{student_id}.png>')
+        msg.attach(msg_qr_code)
+
+    # Attach the Instagram logo
+    with open(insta_img_path, 'rb') as f:
+        insta_data = f.read()
+        msg_insta = MIMEImage(insta_data)
+        msg_insta.add_header('Content-ID', '<insta.png>')
+        msg.attach(msg_insta)
+
+    # Attach the LinkedIn logo
+    with open(linkedin_img_path, 'rb') as f:
+        linkedin_data = f.read()
+        msg_linkedin = MIMEImage(linkedin_data)
+        msg_linkedin.add_header('Content-ID', '<linkedin.png>')
+        msg.attach(msg_linkedin)
 
     msg.send()
 
