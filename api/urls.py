@@ -12,4 +12,5 @@ urlpatterns=[
     path('verify_email',views.VerifyEmail.as_view()),
     path('subscribe',views.Subscribe.as_view()),
     path('action',views.Action.as_view()),
+    # path('<str>:data/<str>:secret',views.GetExcel().as_view()),
 ]

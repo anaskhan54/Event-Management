@@ -21,7 +21,7 @@ class RegisterView(APIView):
     def post(self,request):
         
         try:
-            #recaptcha_response= request.headers.get('Recaptcha-Token')
+            recaptcha_response= request.headers.get('Recaptcha-Token')
             first_name = request.data['first_name']
             last_name = request.data['last_name']
             mobile_number = request.data['mobile_number']
@@ -37,8 +37,8 @@ class RegisterView(APIView):
             
         except:
              return Response({"message":"Some fields are missing"},status=400)
-        recaptcha_response="papa"
-        if (verify_recaptcha(recaptcha_response)) or True:
+        # recaptcha_response="papa"
+        if (verify_recaptcha(recaptcha_response)):
              pass
         else:
             return Response({'message':'Invalid Recaptcha'},status=400)
@@ -327,4 +327,6 @@ class Action(APIView):
             return Response({"message":"Invalid QR Code"},status=400)
         
             
-    
+class GetExcel(APIView):
+    def get(self,request,data,secret):
+        return Response({"message":"Hello"},status=200)
