@@ -54,9 +54,9 @@ class RegisterView(APIView):
                 return Response({"message":"Last name is invalid"},status=400)
             if not re.match(r'^[6-9][0-9]{9}$', mobile_number):
                 return Response({"message":"Mobile number is invalid"},status=400)
-            if not re.match(r'^22[0-9a-zA-Z_-]+$', student_id):             
+            if not re.match(r'^23[0-9a-zA-Z_-]+$', student_id):             
                 return Response({"message":"Only first year students are allowed"},status=400)
-            if not re.match(r'^22\d{11}$', university_roll_number):
+            if not re.match(r'^23\d{11}$', university_roll_number):
                 return Response({"message":"Only first year students are allowed"},status=400)
             if hacker_rank_id == "":
                 return Response({"message":"Hacker Rank ID can not be blank"},status=400)
