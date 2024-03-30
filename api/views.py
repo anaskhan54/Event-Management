@@ -253,9 +253,14 @@ class VerifyEmail(APIView):
 class Subscribe(APIView):
     def post(self,request):
         try:
+            recaptcha_response= request.headers.get('Recaptcha-Token')
             email=request.data['email']
         except:
-            return Response({"message":"No email in body"},status=400)
+            return Response({"message":"Either You are a bot or the email field is blank"},status=400)
+        if (verify_recaptcha(recaptcha_response)):
+            pass
+        else:
+            return Response({'message':'Invalid Recaptcha'},status=400)
         if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
             return Response({"message":"Invalid Email"},status=400)
         if(Subscribers.objects.filter(email=email).exists()):
