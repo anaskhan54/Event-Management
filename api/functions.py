@@ -35,17 +35,18 @@ def time_left(target_date):
     
     return days, hours, minutes, seconds
 
-def verify_recaptcha(response):
+def verify_recaptcha(token):
     url = 'https://www.google.com/recaptcha/api/siteverify'
     values = {
-                'secret': settings.RECAPTCHA_SECRET_KEY,
-                'response': response
-            }
+        'secret': settings.RECAPTCHA_SECRET_KEY,
+        'response': token
+    }
     data = urllib.parse.urlencode(values).encode('utf-8')
     req = urllib.request.Request(url, data)
     response = urllib.request.urlopen(req)
     result = json.load(response)
-    if result['success']:
+    print(result)
+    if result['success'] and result['score'] >= 0.5:
         return True
     else:
         return False
