@@ -58,8 +58,8 @@ class RegisterView(APIView):
                 return Response({"message":"Only first year students are allowed"},status=400)
             if not re.match(r'^22\d{11}$', university_roll_number):
                 return Response({"message":"Only first year students are allowed"},status=400)
-            if not re.match(r'^[a-zA-Z0-9_-]+$', hacker_rank_id):
-                return Response({"message":"Invalid Hacker Rank ID"},status=400)
+            if hacker_rank_id == "":
+                return Response({"message":"Hacker Rank ID can not be blank"},status=400)
         #check if user already registered
             
         #send_qr_code(college_email,student_id)
