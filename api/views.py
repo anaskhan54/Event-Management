@@ -56,7 +56,7 @@ class RegisterView(APIView):
                 return Response({"message":"Mobile number is invalid"},status=400)
             if not re.match(r'^[0-9a-zA-Z_-]+$', student_id):             
                 return Response({"message":"Only first year students are allowed"},status=400)
-            if not re.match(r'^23\d{11}$', university_roll_number):
+            if not re.match(r'^22\d{11}$', university_roll_number):
                 return Response({"message":"Only first year students are allowed"},status=400)
         
         #check if user already registered
