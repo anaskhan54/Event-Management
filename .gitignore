@@ -90,3 +90,5 @@ db.sqlite3
 PC/.env
 temp/
 *db.sqlite3*
+*.xlsx
+*.xls

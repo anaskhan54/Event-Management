@@ -48,15 +48,16 @@ class RegisterView(APIView):
                 return Response({"message":"Only College email is allowed"},status=400)
             if student_id not in college_email:
                 return Response({"message":"Only first year students are allowed"},status=400)
-            if not re.match(r'^[a-zA-Z\s]+$', first_name):
+            if not re.match(r"^[a-zA-Z\s'-.]+$", first_name):
                 return Response({"message":"First name is invalid"},status=400)
-            if not re.match(r'^[a-zA-Z\s]+$', last_name):
+            if not re.match(r"^[a-zA-Z\s'-.]+$", last_name):
                 return Response({"message":"Last name is invalid"},status=400)
-            if not re.match(r'^[0-9]{10}$', mobile_number):
+            if not re.match(r'^[6-9][0-9]{9}$', mobile_number):
                 return Response({"message":"Mobile number is invalid"},status=400)
             if not re.match(r'^[0-9a-zA-Z_-]+$', student_id):             
                 return Response({"message":"Only first year students are allowed"},status=400)
-            
+            if not re.match(r'^23\d{11}$', university_roll_number):
+                return Response({"message":"Only first year students are allowed"},status=400)
         
         #check if user already registered
             
