@@ -60,7 +60,15 @@ class RegisterView(APIView):
                 return Response({"message":"Only first year students are allowed"},status=400)
             if hacker_rank_id == "":
                 return Response({"message":"Hacker Rank ID can not be blank"},status=400)
-        #check if user already registered
+            if not isinstance(is_hosteler,bool):
+                return Response({"message":"is_hosteler must be boolean"},status=400)
+            if not isinstance(isContestOnly,bool):
+                return Response({"message":"is_ContestOnly must be boolean"},status=400)
+            if gender  not in ['Male','Female','Others']:
+                return Response({"message":"Invalid gender choice"},status=400)
+            #check if section is from S1 to S20
+            if not re.match(r'^S(?:[1-9]|1\d|20)$', section):
+                return Response({"message":"Invalid Section"},status=400)
             
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
