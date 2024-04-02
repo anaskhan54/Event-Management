@@ -48,18 +48,21 @@ class RegisterView(APIView):
              
             if not re.match(r'^[a-zA-Z0-9_.+-]+@akgec\.ac\.in$', college_email):
                 return Response({"message":"Only College email is allowed"},status=400)
-            if student_id not in college_email:
-                return Response({"message":"Only first year students are allowed"},status=400)
+            integer_part = re.match(r"\d+", student_id).group(0)
+            if integer_part not in college_email:
+                return Response({"message":"Student ID not in College Email"},status=400)
             if not re.match(r"^[a-zA-Z\s'-.]+$", first_name):
                 return Response({"message":"First name is invalid"},status=400)
-            if not re.match(r"^[a-zA-Z\s'-.]+$", last_name):
+            if not re.match(r"^[a-zA-Z\s'-.]*$", last_name):
                 return Response({"message":"Last name is invalid"},status=400)
             if not re.match(r'^[6-9][0-9]{9}$', mobile_number):
                 return Response({"message":"Mobile number is invalid"},status=400)
-            if not re.match(r'^23[0-9a-zA-Z_-]+$', student_id):             
-                return Response({"message":"Only first year students are allowed"},status=400)
-            if not re.match(r'^23\d{11}$', university_roll_number):
-                return Response({"message":"Only first year students are allowed"},status=400)
+            if not re.match(r'^(22|23)[0-9a-zA-Z_-]+$', student_id):
+                return Response({"message": "Only first and second year students are allowed"}, status=400)
+
+            if not re.match(r'^(22|23)\d{11}$', university_roll_number):
+                return Response({"message": "Only first and second year students are allowed"}, status=400)
+
             if hacker_rank_id == "":
                 return Response({"message":"Hacker Rank ID can not be blank"},status=400)
             if not isinstance(is_hosteler,bool):
@@ -68,9 +71,13 @@ class RegisterView(APIView):
                 return Response({"message":"is_ContestOnly must be boolean"},status=400)
             if gender  not in ['Male','Female','Others']:
                 return Response({"message":"Invalid gender choice"},status=400)
-            #check if section is from S1 to S20
-            if not re.match(r'^S(?:[1-9]|1\d|20)$', section):
-                return Response({"message":"Invalid Section"},status=400)
+            
+            second_year_students=Students.objects.filter(student_id__startswith='22',isPaid=True).count()
+            if second_year_students==30:
+                return Response({"message":"Second Year Students Registration Limit Reached"},status=400)
+
+
+            
             
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
@@ -79,6 +86,7 @@ class RegisterView(APIView):
             args=(college_email,token)
         )
         email_thread.start()
+        
         student = Students(
                 first_name=first_name,
                 last_name=last_name,
@@ -240,7 +248,8 @@ class VerifyEmail(APIView):
             print(student)
             if(student.isVerified):
                 return Response({"message":"Already Verified"},status=200)
-            
+            if(Students.objects.filter(student_id__startswith='22',isPaid=True).count()==30):
+                return Response({"message":"30 Students Limit Reached"},status=400)
             student.isVerified=True
             student.save()
             email_thread=threading.Thread(
@@ -291,9 +300,16 @@ class Action(APIView):
             std_id=decrypt_data(qr_data)
             student=Students.objects.filter(student_id=std_id).last()
             print(student.token)
+
             if action=="pay":
+                
+                if student.student_id.startswith('22'):
+                    second_year_students=Students.objects.filter(student_id__startswith='22',isPaid=True).count()
+                    if second_year_students==30:
+                        return Response({"message":"30 Students Limit Reached"},status=400)
                 if(student.isPaid):
                     print(student.isPaid)
+                    
                     return Response({"message":"Already Paid"},status=200)
                 else:
                     student.isPaid=True

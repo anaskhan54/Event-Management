@@ -16,3 +16,4 @@ python-dotenv==1.0.1
 qrcode==7.4.2
 sqlparse==0.4.4
 typing_extensions==4.10.0
+psyco==2.9.9
