@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'PC.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 ENGINE=os.getenv('ENGINE')
 NAME=os.getenv('NAME')
-USER=os.getenv('USER')
+USER=os.getenv('DBUSER')
 PASSWORD=os.getenv('PASSWORD')
 HOST=os.getenv('HOST')
 PORT=os.getenv('PORT')
@@ -97,7 +97,7 @@ DATABASES={
         'PASSWORD':PASSWORD,
         'HOST':HOST,
         'PORT':PORT
-        
+
     }
 }
 
