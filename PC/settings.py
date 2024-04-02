@@ -82,11 +82,22 @@ WSGI_APPLICATION = 'PC.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+ENGINE=os.getenv('ENGINE')
+NAME=os.getenv('NAME')
+USER=os.getenv('USER')
+PASSWORD=os.getenv('PASSWORD')
+HOST=os.getenv('HOST')
+PORT=os.getenv('PORT')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASES={
+    'default':{
+        'ENGINE':ENGINE,
+        'NAME':NAME,
+        'USER':USER,
+        'PASSWORD':PASSWORD,
+        'HOST':HOST,
+        'PORT':PORT
+        
     }
 }
 

@@ -129,8 +129,8 @@ def send_qr_code(email, student_id,student_name):
             <p>Your Programming Club</p>
             <hr>
             <div class="social-logos">
-                <a href="https://www.instagram.com/" target="_blank"><img src="cid:insta.png" alt="Instagram Logo" class="social-logo" style="height: 30px; width: 30px;"></a>
-                <a href="https://www.linkedin.com/" target="_blank"><img src="cid:linkedin.png" alt="LinkedIn Logo" class="social-logo" style="height: 30px; width: 30px;"></a>
+                <a href="https://www.instagram.com/programmingclub.akgec/" target="_blank"><img src="cid:insta.png" alt="Instagram Logo" class="social-logo" style="height: 30px; width: 30px;"></a>
+                
             </div>
         </div>
     </body>
