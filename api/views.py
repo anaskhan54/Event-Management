@@ -14,7 +14,7 @@ import threading
 
 class TimeLeft(APIView):
     def get(self,request):
-        target_date = "11/04/2024 00:00"
+        target_date = "01/04/2024 00:00"
         days, hours, minutes, seconds = time_left(target_date)
         if (days <0 or hours <0 or minutes <0 or seconds <0):
             return Response({"days":0,"hours":0,"minutes":0,"seconds":0},status=200)
@@ -107,6 +107,7 @@ class LoginView(APIView):
         try:
             username = request.data['username']
             password = request.data['password']
+            print(username,password)
             
         except:
             return Response({"message":"Some fields are missing"},status=400)
