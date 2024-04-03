@@ -137,7 +137,9 @@ class LoginView(APIView):
 class GetAccessToken(APIView):
     def get(self,request):
         try:
-            refresh_token = request.data['refresh_token']
+            #get refresh token from query parameter
+            refresh_token=request.query_params['refresh_token']
+            print(refresh_token)
         except:
             return Response({"message":"No refresh token in body"},status=400)
         if(is_refresh_valid(refresh_token)):
