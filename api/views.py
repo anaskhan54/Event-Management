@@ -421,7 +421,7 @@ class GetExcel(APIView):
             return Response({"message":"Invalid URL"},status=400)
         
 
-class VerifyToke(APIView):
+class VerifyToken(APIView):
     def get(self,request):
         try:
             token=request.headers['Authorization']
