@@ -14,7 +14,7 @@ import threading
 
 class TimeLeft(APIView):
     def get(self,request):
-        target_date = "01/04/2024 00:00"
+        target_date = "12/04/2024 00:00"
         days, hours, minutes, seconds = time_left(target_date)
         if (days <0 or hours <0 or minutes <0 or seconds <0):
             return Response({"days":0,"hours":0,"minutes":0,"seconds":0},status=200)
@@ -310,7 +310,7 @@ class Action(APIView):
                 if(student.isPaid):
                     print(student.isPaid)
                     
-                    return Response({"message":"Already Paid"},status=200)
+                    return Response({"message":"Already Paid"},status=400)
                 else:
                     student.isPaid=True
                     student.save()
@@ -319,9 +319,9 @@ class Action(APIView):
                                      "student_details":serializer.data},status=200)
             elif action=="mark_day1":
                 if(student.isPaid==False):
-                    return Response({"message":"Payment Pending"},status=200)
+                    return Response({"message":"Payment Pending"},status=400)
                 if(student.day1_att):
-                    return Response({"message":"Already Marked"},status=200)
+                    return Response({"message":"Already Marked"},status=400)
                 else:
                     student.day1_att=True
                     student.save()
@@ -330,9 +330,9 @@ class Action(APIView):
                                      "student_details":serializer.data},status=200)
             elif action=="mark_day2":
                 if(student.isPaid==False):
-                    return Response({"message":"Payment Pending"},status=200)
+                    return Response({"message":"Payment Pending"},status=400)
                 if(student.day2_att):
-                    return Response({"message":"Already Marked"},status=200)
+                    return Response({"message":"Already Marked"},status=400)
                 else:
                     student.day2_att=True
                     student.save()
@@ -341,7 +341,7 @@ class Action(APIView):
                                      "student_details":serializer.data},status=200)
             elif action=="mark_contest":
                 if(student.contest_att):
-                    return Response({"message":"Already Marked"},status=200)
+                    return Response({"message":"Already Marked"},status=400)
                 else:
                     student.contest_att=True
                     student.save()

@@ -165,12 +165,7 @@ def send_qr_code(email, student_id,student_name):
         msg_insta.add_header('Content-ID', '<insta.png>')
         msg.attach(msg_insta)
 
-    # Attach the LinkedIn logo
-    with open(linkedin_img_path, 'rb') as f:
-        linkedin_data = f.read()
-        msg_linkedin = MIMEImage(linkedin_data)
-        msg_linkedin.add_header('Content-ID', '<linkedin.png>')
-        msg.attach(msg_linkedin)
+   
 
     msg.send()
 
