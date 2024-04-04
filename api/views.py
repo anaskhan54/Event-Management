@@ -14,7 +14,7 @@ import threading
 
 class TimeLeft(APIView):
     def get(self,request):
-        target_date = "12/04/2024 00:00"
+        target_date = "08/04/2024 00:00"
         days, hours, minutes, seconds = time_left(target_date)
         if (days <0 or hours <0 or minutes <0 or seconds <0):
             return Response({"days":0,"hours":0,"minutes":0,"seconds":0},status=200)
@@ -86,8 +86,27 @@ class RegisterView(APIView):
             args=(college_email,token)
         )
         email_thread.start()
-        
-        student = Students(
+        #check if student already exists and is not verified
+        if(Students.objects.filter(student_id=student_id,isVerified=False).exists()):
+            student=Students.objects.filter(student_id=student_id).last()
+            student.first_name=first_name
+            student.last_name=last_name
+            student.mobile_number=mobile_number
+            student.gender=gender,
+            student.college_email=college_email,
+            student.student_id=student_id,
+            student.branch=branch,
+            student.section=section,
+            student.isHosteler=is_hosteler,
+            student.hacker_rank_id=hacker_rank_id,
+            student.token=token,
+            student.isContestOnly=isContestOnly,
+            student.university_roll_number=university_roll_number
+            student.save()
+        elif Students.objects.filter(student_id=student_id,isVerified=True).exists():
+            return Response({"message":"You have already Registered, Check mail for QR or contact coordinator"},status=400)
+        else:
+            student = Students(
                 first_name=first_name,
                 last_name=last_name,
                 mobile_number=mobile_number,
@@ -102,7 +121,7 @@ class RegisterView(APIView):
                 isContestOnly=isContestOnly,
                 university_roll_number=university_roll_number
             )
-        student.save()
+            student.save()
         
         
         return Response({'message':'Verification-Email Sent'},status=201)
