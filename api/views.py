@@ -14,7 +14,7 @@ import threading
 
 class TimeLeft(APIView):
     def get(self,request):
-        target_date = "08/04/2024 00:00"
+        target_date = "08/04/2024 18:30"
         days, hours, minutes, seconds = time_left(target_date)
         if (days <0 or hours <0 or minutes <0 or seconds <0):
             return Response({"days":0,"hours":0,"minutes":0,"seconds":0},status=200)
