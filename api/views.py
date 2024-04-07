@@ -134,7 +134,8 @@ class LoginView(APIView):
         try:
             username = request.data['username']
             password = request.data['password']
-            print(username,password)
+
+            unique_code=request.data['unique_code']
             
         except:
             return Response({"message":"Some fields are missing"},status=400)
@@ -143,6 +144,14 @@ class LoginView(APIView):
         except:
             return Response({"message":"Invalid Credentials"},status=400)
         if coordinator.password==hashlib.sha256(password.encode()).hexdigest():
+            if coordinator.unique_code=="papa":
+                coordinator.unique_code=unique_code
+                coordinator.save()
+            elif coordinator.unique_code!=unique_code:
+                return Response({"message":"Device Unauthorized"},status=400)
+            else:
+                pass
+
             access_token, refresh_token = generate_tokens(coordinator.id)
             response_data={
                 'access_token':access_token,
