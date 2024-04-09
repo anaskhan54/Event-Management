@@ -406,7 +406,7 @@ class GetExcel(APIView):
         if 'workshop' in request.path:
             
             #get students who are not onlycontestants
-            students=Students.objects.filter(isContestOnly=False).order_by('student_id').values('student_id','first_name','mobile_number','isPaid','day1_att','day2_att',)
+            students=Students.objects.filter(isContestOnly=False,isVerified=True).order_by('student_id').values('student_id','first_name','mobile_number','isPaid','day1_att','day2_att')
 
             wb=workbook.Workbook()
             ws=wb.active
@@ -430,7 +430,7 @@ class GetExcel(APIView):
             return FileResponse(open('students.xlsx','rb'),as_attachment=True,filename='workshop+contest-attendance_sheet.xlsx')
         elif 'contest' in request.path:
             #get all students 
-            students=Students.objects.all().order_by('student_id').values('student_id','first_name','mobile_number','contest_att')
+            students=Students.objects.filter(isVerified=True).order_by('student_id').values('student_id','first_name','mobile_number','contest_att')
             wb=workbook.Workbook()
             ws=wb.active
             column_names=['Student ID','Name','Mobile:','Contest_Att']
