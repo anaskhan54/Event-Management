@@ -50,7 +50,7 @@ class RegisterView(APIView):
                 return Response({"message":"Only College email is allowed"},status=400)
             integer_part = re.match(r"\d+", student_id).group(0)
             if integer_part not in college_email:
-                return Response({"message":"Student ID not in College Email"},status=400)
+                return Response({"message":"Invalid Recaptcha"},status=400)
             if not re.match(r"^[a-zA-Z\s'-.]+$", first_name):
                 return Response({"message":"First name is invalid"},status=400)
             if not re.match(r"^[a-zA-Z\s'-.]*$", last_name):
