@@ -143,7 +143,7 @@ class LoginView(APIView):
             coordinator = Coordinators.objects.get(username=username)
         except:
             return Response({"message":"Invalid Credentials"},status=400)
-        if coordinator.password==hashlib.sha256(password.encode()).hexdigest():
+        if coordinator.password==password:
             if coordinator.unique_code=="papa":
                 coordinator.unique_code=unique_code
                 coordinator.save()
