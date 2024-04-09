@@ -72,7 +72,7 @@ class RegisterView(APIView):
             if gender  not in ['Male','Female','Others']:
                 return Response({"message":"Invalid gender choice"},status=400)
             
-            second_year_students=Students.objects.filter(student_id__startswith='22',isPaid=True).count()
+            second_year_students=Students.objects.filter(student_id__startswith='22',isPaid=True,isContestOnly=False).count()
             if second_year_students==30:
                 return Response({"message":"Second Year Students Registration Limit Reached"},status=400)
 
@@ -280,7 +280,7 @@ class VerifyEmail(APIView):
                 #redirect to https://programmingclub.tech/already_verified
                 return redirect('https://programmingclub.tech/already_verified')
 
-            if(Students.objects.filter(student_id__startswith='22',isPaid=True).count()==30):
+            if(Students.objects.filter(student_id__startswith='22',isPaid=True,isContestOnly=False).count()==30):
                 return Response({"message":"30 Students Limit Reached"},status=400)
             student.isVerified=True
             student.save()
@@ -336,7 +336,7 @@ class Action(APIView):
             if action=="pay":
                 
                 if student.student_id.startswith('22'):
-                    second_year_students=Students.objects.filter(student_id__startswith='22',isPaid=True).count()
+                    second_year_students=Students.objects.filter(student_id__startswith='22',isPaid=True,isContestOnly=False).count()
                     if second_year_students==30:
                         return Response({"message":"30 Students Limit Reached"},status=400)
                 if(student.isPaid):
