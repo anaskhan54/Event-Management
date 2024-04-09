@@ -268,7 +268,7 @@ class MakePayment(APIView):
                 return Response({"message":"Invalid QR Code"},status=400)
         except:
             return Response({"message":"No qr_data in body"},status=400)
-        
+from django.shortcuts import redirect      
 class VerifyEmail(APIView):
     def get(self,request):
         
@@ -277,7 +277,9 @@ class VerifyEmail(APIView):
             student=Students.objects.filter(token=token).last()
             print(student)
             if(student.isVerified):
-                return Response({"message":"Already Verified"},status=200)
+                #redirect to https://programmingclub.tech/already_verified
+                return redirect('https://programmingclub.tech/already_verified')
+
             if(Students.objects.filter(student_id__startswith='22',isPaid=True).count()==30):
                 return Response({"message":"30 Students Limit Reached"},status=400)
             student.isVerified=True
@@ -288,9 +290,9 @@ class VerifyEmail(APIView):
             )
             email_thread.start()
            
-            return Response({"message":"Email Verified, Check your Email for QR Code and make payment at desk"},status=200)
+            return redirect('https://programmingclub.tech/verified')
         except:
-            return Response({"message":"Invalid Token"},status=400)
+            return redirect('https://programmingclub.tech/invalid')
         
 class Subscribe(APIView):
     def post(self,request):
