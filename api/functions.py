@@ -229,7 +229,7 @@ def send_verification_email(college_email,token):
     <html>
     <body>
         <h2>Thank You for Registering, Please Verify Your Email</h2>
-        <a href="https://pc.anaskhan.site/api/verify_email?token={token}">Click here to verify your Email</a>
+        <a href="https://api.programmingclub.tech/api/verify_email?token={token}">Click here to verify your Email</a>
     </body>
     </html>
     """
