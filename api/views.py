@@ -60,6 +60,7 @@ class RegisterView(APIView):
             elif result['success'] and result['score'] == 0.1:
                 return Response({"message":"register karlo, main sikha dunga"},status=400)
             else:
+                print(request.data)
                 return Response({"message":"Invalid Recaptcha"},status=400)
         except:
             return Response({"message":"Invalid Recaptcha"},status=400)
