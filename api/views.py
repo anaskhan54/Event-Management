@@ -60,6 +60,7 @@ class RegisterView(APIView):
             elif result['success'] and result['score'] == 0.1:
                 return Response({"message":"register karle, main sikha dunga"},status=400)
             elif result['success'] and result['score'] == 0.3:
+                print(request.data)
                 return Response({"message":"bb pr aake register karle, main sikha dunga"},status=400)
             else:
                 print(request.data)
