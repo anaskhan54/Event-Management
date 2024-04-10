@@ -101,6 +101,7 @@ class RegisterView(APIView):
             student.hacker_rank_id=hacker_rank_id,
             student.token=token,
             student.isContestOnly=isContestOnly,
+            student.token=token
             student.university_roll_number=university_roll_number
             student.save()
         elif Students.objects.filter(student_id=student_id,isVerified=True).exists():
