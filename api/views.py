@@ -239,15 +239,7 @@ class GetAccessToken(APIView):
 
 class GetStudentDetails(APIView):
     def get(self,request,std_id):
-        try:
-            token=request.headers['Authorization']
-            if(is_access_valid(access_token=token)):
-                pass
-            else:
-                return Response({"message":"Either the token is expired or is invalid"},status=400)
-            
-        except:
-            return Response({"message":"Unauthorized"},status=401)
+       
         
         try:
             student=Students.objects.filter(student_id=std_id).last()
