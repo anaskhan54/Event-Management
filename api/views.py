@@ -87,6 +87,7 @@ class RegisterView(APIView):
             if hacker_rank_id == "":
                 return Response({"message":"Hacker Rank ID can not be blank"},status=400)
             if not isinstance(is_hosteler,bool):
+                
                 return Response({"message":"is_hosteler must be boolean"},status=400)
             if not isinstance(isContestOnly,bool):
                 return Response({"message":"is_ContestOnly must be boolean"},status=400)
@@ -98,7 +99,7 @@ class RegisterView(APIView):
                 return Response({"message":"Second Year Students Registration Limit Reached"},status=400)
 
 
-            
+            print(is_hosteler)
             
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
