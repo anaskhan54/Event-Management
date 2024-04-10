@@ -10,6 +10,9 @@ import jwt
 from rest_framework import serializers
 from .serializers import StudentSerializer
 import threading
+import urllib.request
+import urllib.parse
+import json
 # Create your views here.
 
 class TimeLeft(APIView):
@@ -40,10 +43,28 @@ class RegisterView(APIView):
         except:
              return Response({"message":"Some fields are missing"},status=400)
         # recaptcha_response="papa"
-        if (verify_recaptcha(recaptcha_response)):
-             pass
-        else:
-            return Response({'message':'Invalid Recaptcha'},status=400)
+        
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode('utf-8')
+        req = urllib.request.Request(url, data)
+        response = urllib.request.urlopen(req)
+        result = json.load(response)
+        print(result)
+        try:
+            if result['success'] and result['score'] >= 0.5:
+                pass
+            elif result['success'] and result['score'] == 0.1:
+                return Response({"message":"register karlo, main sikha dunga"},status=400)
+            else:
+                return Response({"message":"Invalid Recaptcha"},status=400)
+        except:
+            return Response({"message":"Invalid Recaptcha"},status=400)
+             
+        
         if(settings.PRODUCTION=="TRUE"):
              
             if not re.match(r'^[a-zA-Z0-9_.+-]+@akgec\.ac\.in$', college_email):
