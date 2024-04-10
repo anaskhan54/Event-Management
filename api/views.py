@@ -122,6 +122,11 @@ class RegisterView(APIView):
                 student.token=token
                 student.university_roll_number=university_roll_number
                 student.save()
+                email_thread=threading.Thread(
+                target=send_verification_email,
+                args=(college_email,token)
+            )
+                email_thread.start()
             elif Students.objects.filter(student_id=student_id,isVerified=True).exists():
                 return Response({"message":"You have already Registered, Check mail for QR or contact coordinator"},status=400)
             else:
@@ -141,16 +146,17 @@ class RegisterView(APIView):
                     university_roll_number=university_roll_number
                 )
                 student.save()
+                email_thread=threading.Thread(
+                target=send_verification_email,
+                args=(college_email,token)
+            )
+                email_thread.start()
         except Exception as e:
             print(e)
             print(request.data)
             return Response({"message":"Something went wrong, Try again later"},status=400)
         
-        email_thread=threading.Thread(
-            target=send_verification_email,
-            args=(college_email,token)
-        )
-        email_thread.start()
+        
         return Response({'message':'Verification-Email Sent'},status=201)
       
         
