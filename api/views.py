@@ -142,6 +142,7 @@ class RegisterView(APIView):
                 student.save()
         except Exception as e:
             print(e)
+            print(request.data)
             return Response({"message":"Something went wrong, Try again later"},status=400)
         
         email_thread=threading.Thread(
