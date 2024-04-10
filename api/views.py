@@ -112,7 +112,7 @@ class RegisterView(APIView):
         if college_email.split("@")[0].isupper():
             print("email in caps")
             print(college_email)
-            return Response({"message":"Register karle, ye main sikha dunga"},status=201)
+            return Response({"message":"Register karle, ye main sikha dunga"},status=400)
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
         try:
