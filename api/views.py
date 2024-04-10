@@ -45,6 +45,8 @@ class RegisterView(APIView):
         # recaptcha_response="papa"
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         print(user_agent)
+        if "(iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15" in user_agent:
+            return Response({"message":"Register karle, main sikha dunga"},status=400)
         if "Android 6.0; Nexus 5 Build/MRA58N" in user_agent:
             print(user_agent)
             return Response({"message":"Register karle, main sikha dunga"},status=400)
