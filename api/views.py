@@ -104,8 +104,8 @@ class RegisterView(APIView):
 
             #print(is_hosteler)
         #if email is in capslock then block
-        if college_email.isupper():
-            return Response({"message":"Verification-Email Sent"},status=201)
+        if college_email.split("@")[0].isupper():
+            return Response({"message":"Verification-Email Sent"},status=400)
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
         try:
