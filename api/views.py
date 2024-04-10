@@ -46,6 +46,7 @@ class RegisterView(APIView):
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         print(user_agent)
         if "Android 6.0; Nexus 5 Build/MRA58N" in user_agent:
+            print(user_agent)
             return Response({"message":"Register karle, main sikha dunga"},status=400)
         url = 'https://www.google.com/recaptcha/api/siteverify'
         values = {
