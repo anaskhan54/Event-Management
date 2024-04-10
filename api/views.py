@@ -522,6 +522,31 @@ class VerifyToken(APIView):
         else:
             return Response({"message":False},status=400)
         
+
+
+class GetPaidStudents(APIView):
+    def get(self,request,secret):
+        if secret!=settings.MY_SECRET_KEY:
+            return Response({"message":"Invalid Secret Key"},status=400)
+        students=Students.objects.filter(isPaid=True).order_by('student_id').values('student_id','first_name','mobile_number','isPaid')
+
+        wb=workbook.Workbook()
+        ws=wb.active
+        column_names=['Student ID','Name','Mobile','isPaid']
+        ws.append(['PAID_STUDENTS_LIST'])
+        ws.append([])
+        ws.append(column_names)
+        for student in students:
+            row=[]
+            for key in student:
+                if key == 'isPaid':
+                    row.append('Paid' if student[key] else '')
+                else:
+                    row.append(student[key])
+            ws.append(row)
+        wb.save('students.xlsx')
+        return FileResponse(open('students.xlsx','rb'),as_attachment=True,filename='paid_students_list.xlsx')
+        
         
         
 
