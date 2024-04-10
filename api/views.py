@@ -135,6 +135,7 @@ class RegisterView(APIView):
                 except Exception as e:
                     print("error")
                     print(e)
+                    print(response.data)
                     return Response({"message":"Something went wrong, Try again later"},status=400)
             elif Students.objects.filter(student_id=student_id,isVerified=True).exists():
                 return Response({"message":"You have already Registered, Check mail for QR or contact coordinator"},status=400)
