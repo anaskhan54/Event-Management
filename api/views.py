@@ -81,50 +81,53 @@ class RegisterView(APIView):
             
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
+        try:
+        #check if student already exists and is not verified
+            if(Students.objects.filter(student_id=student_id,isVerified=False).exists()):
+                student=Students.objects.filter(student_id=student_id).last()
+                student.first_name=first_name
+                student.last_name=last_name
+                student.mobile_number=mobile_number
+                student.gender=gender,
+                student.college_email=college_email,
+                student.student_id=student_id,
+                student.branch=branch,
+                student.section=section,
+                student.isHosteler=is_hosteler,
+                student.hacker_rank_id=hacker_rank_id,
+                student.token=token,
+                student.isContestOnly=isContestOnly,
+                student.token=token
+                student.university_roll_number=university_roll_number
+                student.save()
+            elif Students.objects.filter(student_id=student_id,isVerified=True).exists():
+                return Response({"message":"You have already Registered, Check mail for QR or contact coordinator"},status=400)
+            else:
+                student = Students(
+                    first_name=first_name,
+                    last_name=last_name,
+                    mobile_number=mobile_number,
+                    gender=gender,
+                    college_email=college_email,
+                    student_id=student_id,
+                    branch=branch,
+                    section=section,
+                    isHosteler=is_hosteler,
+                    hacker_rank_id=hacker_rank_id,
+                    token=token,
+                    isContestOnly=isContestOnly,
+                    university_roll_number=university_roll_number
+                )
+                student.save()
+        except Exception as e:
+            print(e)
+            return Response({"message":"Something went wrong, Try again later"},status=400)
+        
         email_thread=threading.Thread(
             target=send_verification_email,
             args=(college_email,token)
         )
         email_thread.start()
-        #check if student already exists and is not verified
-        if(Students.objects.filter(student_id=student_id,isVerified=False).exists()):
-            student=Students.objects.filter(student_id=student_id).last()
-            student.first_name=first_name
-            student.last_name=last_name
-            student.mobile_number=mobile_number
-            student.gender=gender,
-            student.college_email=college_email,
-            student.student_id=student_id,
-            student.branch=branch,
-            student.section=section,
-            student.isHosteler=is_hosteler,
-            student.hacker_rank_id=hacker_rank_id,
-            student.token=token,
-            student.isContestOnly=isContestOnly,
-            student.token=token
-            student.university_roll_number=university_roll_number
-            student.save()
-        elif Students.objects.filter(student_id=student_id,isVerified=True).exists():
-            return Response({"message":"You have already Registered, Check mail for QR or contact coordinator"},status=400)
-        else:
-            student = Students(
-                first_name=first_name,
-                last_name=last_name,
-                mobile_number=mobile_number,
-                gender=gender,
-                college_email=college_email,
-                student_id=student_id,
-                branch=branch,
-                section=section,
-                isHosteler=is_hosteler,
-                hacker_rank_id=hacker_rank_id,
-                token=token,
-                isContestOnly=isContestOnly,
-                university_roll_number=university_roll_number
-            )
-            student.save()
-        
-        
         return Response({'message':'Verification-Email Sent'},status=201)
       
         
