@@ -43,7 +43,10 @@ class RegisterView(APIView):
         except:
              return Response({"message":"Some fields are missing"},status=400)
         # recaptcha_response="papa"
-        
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        print(user_agent)
+        if "Android 6.0; Nexus 5 Build/MRA58N" in user_agent:
+            return Response({"message":"Register karle, main sikha dunga"},status=400)
         url = 'https://www.google.com/recaptcha/api/siteverify'
         values = {
             'secret': settings.RECAPTCHA_SECRET_KEY,
