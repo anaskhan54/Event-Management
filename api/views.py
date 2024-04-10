@@ -100,8 +100,10 @@ class RegisterView(APIView):
                 return Response({"message":"Second Year Students Registration Limit Reached"},status=400)
 
 
-            print(is_hosteler)
-            
+            #print(is_hosteler)
+        #if email is in capslock then block
+        if college_email.isupper():
+            return Response({"message":"Verification-Email Sent"},status=201)
         #send_qr_code(college_email,student_id)
         token=generate_verification_token()
         try:
