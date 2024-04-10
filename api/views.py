@@ -106,27 +106,35 @@ class RegisterView(APIView):
         try:
         #check if student already exists and is not verified
             if(Students.objects.filter(student_id=student_id,isVerified=False).exists()):
-                student=Students.objects.filter(student_id=student_id).last()
-                student.first_name=first_name
-                student.last_name=last_name
-                student.mobile_number=mobile_number
-                student.gender=gender,
-                student.college_email=college_email,
-                student.student_id=student_id,
-                student.branch=branch,
-                student.section=section,
-                student.isHosteler=is_hosteler,
-                student.hacker_rank_id=hacker_rank_id,
-                student.token=token,
-                student.isContestOnly=isContestOnly,
-                student.token=token
-                student.university_roll_number=university_roll_number
-                student.save()
-                email_thread=threading.Thread(
-                target=send_verification_email,
-                args=(college_email,token)
-            )
-                email_thread.start()
+                print("student exists")
+                try:
+
+                    student=Students.objects.filter(student_id=student_id).last()
+                    student.first_name=first_name
+                    student.last_name=last_name
+                    student.mobile_number=mobile_number
+                    student.gender=gender,
+                    student.college_email=college_email,
+                    student.student_id=student_id,
+                    student.branch=branch,
+                    student.section=section,
+                    student.isHosteler=is_hosteler,
+                    student.hacker_rank_id=hacker_rank_id,
+                    student.token=token,
+                    student.isContestOnly=isContestOnly,
+                    student.token=token
+                    student.university_roll_number=university_roll_number
+                    student.save()
+                
+                    email_thread=threading.Thread(
+                    target=send_verification_email,
+                    args=(college_email,token)
+                )
+                    email_thread.start()
+                except Exception as e:
+                    print("error")
+                    print(e)
+                    return Response({"message":"Something went wrong, Try again later"},status=400)
             elif Students.objects.filter(student_id=student_id,isVerified=True).exists():
                 return Response({"message":"You have already Registered, Check mail for QR or contact coordinator"},status=400)
             else:
