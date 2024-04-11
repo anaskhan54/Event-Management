@@ -43,7 +43,9 @@ class RegisterView(APIView):
         except:
              return Response({"message":"Some fields are missing"},status=400)
         #if isContestOnly then
+        print(isContestOnly)
         if isContestOnly==True:
+            print(isContestOnly)
             pass
         else:
             return Response({"message":"Sorry, Registrations for the workshop is closed now..."},status=400)
