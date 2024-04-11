@@ -42,7 +42,10 @@ class RegisterView(APIView):
             
         except:
              return Response({"message":"Some fields are missing"},status=400)
-        if not isContestOnly:
+        #if isContestOnly then
+        if isContestOnly==True:
+            pass
+        else:
             return Response({"message":"Sorry, Registrations for the workshop is closed now..."},status=400)
         # recaptcha_response="papa"
         user_agent = request.META.get('HTTP_USER_AGENT', '')
