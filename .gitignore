@@ -92,3 +92,4 @@ temp/
 *db.sqlite3*
 *.xlsx
 *.xls
+emails.txt

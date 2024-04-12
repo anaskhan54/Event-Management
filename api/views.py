@@ -389,7 +389,7 @@ class Action(APIView):
             print(student.token)
 
             if action=="pay":
-                
+                return Response({"message":"Payment Processing Disabled"},status=400)
                 if student.student_id.startswith('22'):
                     second_year_students=Students.objects.filter(student_id__startswith='22',isPaid=True,isContestOnly=False).count()
                     if second_year_students==30:
@@ -543,8 +543,13 @@ class GetPaidStudents(APIView):
             ws.append(row)
         wb.save('students.xlsx')
         return FileResponse(open('students.xlsx','rb'),as_attachment=True,filename='paid_students_list.xlsx')
-        
-        
+class GetPaidEmails(APIView):
+    def get(self,request,secret):
+        if secret != settings.MY_SECRET_KEY:
+            return Response({"message":"Invalid Secret Key"},status=400)
+        #get paid students emails
+        students=Students.objects.filter(isPaid=True).values('first_name','college_email','student_id')
+        return Response(students)
         
 
 

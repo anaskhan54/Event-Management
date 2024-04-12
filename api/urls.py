@@ -17,4 +17,5 @@ urlpatterns=[
     path('workshop/<str:secret>',views.GetExcel().as_view()),
     path('contest/<str:secret>',views.GetExcel().as_view()),
     path('paid/<str:secret>',views.GetPaidStudents().as_view()),
+    path('get_paid_emails/<str:secret>',views.GetPaidEmails().as_view()),
 ]
