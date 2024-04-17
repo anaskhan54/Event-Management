@@ -24,7 +24,7 @@ class TimeLeft(APIView):
         return Response({"days":days,"hours":hours,"minutes":minutes,"seconds":seconds},status=200)
 class RegisterView(APIView):
     def post(self,request):
-        
+        return Response({"message":" Registrations are now closed Thank you for your overwhelming response"},status=400)
         try:
             recaptcha_response= request.headers.get('Recaptcha-Token')
             first_name = request.data['first_name']
@@ -525,19 +525,19 @@ class GetPaidStudents(APIView):
     def get(self,request,secret):
         if secret!=settings.MY_SECRET_KEY:
             return Response({"message":"Invalid Secret Key"},status=400)
-        students=Students.objects.filter(isPaid=True).order_by('student_id').values('student_id','first_name','mobile_number','isPaid')
+        students=Students.objects.filter(isPaid=True,gender='Female',isHosteler=True).order_by('student_id').values('student_id','first_name','mobile_number','university_roll_number','day1_att','day2_att')
 
         wb=workbook.Workbook()
         ws=wb.active
-        column_names=['Student ID','Name','Mobile','isPaid']
-        ws.append(['PAID_STUDENTS_LIST'])
+        column_names=['Student ID','Name','Mobile','University Rollnumber','day1_att','day2_att']
+        ws.append(['Hosteler Girls Attendance Sheet'])
         ws.append([])
         ws.append(column_names)
         for student in students:
             row=[]
             for key in student:
-                if key == 'isPaid':
-                    row.append('Paid' if student[key] else '')
+                if key == 'day1_att' or key=='day2_att':
+                    row.append('P' if student[key] else ' ')
                 else:
                     row.append(student[key])
             ws.append(row)
@@ -548,7 +548,7 @@ class GetPaidEmails(APIView):
         if secret != settings.MY_SECRET_KEY:
             return Response({"message":"Invalid Secret Key"},status=400)
         #get paid students emails
-        students=Students.objects.filter(isPaid=True).values('first_name','college_email','student_id')
+        students=Students.objects.filter(isPaid=True).order_by('student_id').values('first_name','college_email','student_id')
         return Response(students)
         
 
